@@ -24,15 +24,17 @@ hbs.registerHelper('inscribirEstudiante', (datosEstudiante) =>{
 hbs.registerHelper('mostrarCursos', () => {
     listaCursos = listar(rutaCursos);
 
-    let texto = "<table> \
-                    <thead> \
-                        <th>Id</th> \
-                        <th>Nombre del curso</th> \
-                        <th>Modalidad</th> \
-                        <th>Valor</th> \
-                        <th>Descripción</th> \
-                        <th>Intensidad Horaria</th> \
-                        <th>Estado</th> \
+    let texto = "<table class='table'> \
+                    <thead class='thead-dark'> \
+                        <tr> \
+                            <th>Id</th> \
+                            <th>Nombre del curso</th> \
+                            <th>Modalidad</th> \
+                            <th>Valor</th> \
+                            <th>Descripción</th> \
+                            <th>Intensidad Horaria</th> \
+                            <th>Estado</th> \
+                        </tr> \
                     </thead> \
                     <tbody>";
     listaCursos.forEach(curso => {
@@ -54,16 +56,13 @@ hbs.registerHelper('mostrarCursos', () => {
 
 hbs.registerHelper('mostrarInscritos', () => {
     listaEstudiantesxCurso = listar(rutaEstudiantesxCurso);
-    console.log(listaEstudiantesxCurso);
-    let texto = "<table> \
-                    <thead> \
-                        <th>Id</th> \
+    let texto = "<table class='table'> \
+                    <thead class='thead-dark'> \
                         <th>Nombre del curso</th> \
-                        <th>Modalidad</th> \
-                        <th>Valor</th> \
-                        <th>Descripción</th> \
-                        <th>Intensidad Horaria</th> \
-                        <th>Estado</th> \
+                        <th>Documento del estudiante</th> \
+                        <th>Nombre del estudiante</th> \
+                        <th>Correo</th> \
+                        <th>Teléfono</th> \
                     </thead> \
                     <tbody>";
         listaEstudiantesxCurso.forEach(curso => {
