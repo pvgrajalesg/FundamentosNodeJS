@@ -1,83 +1,31 @@
 const express = require('express')
 const app = express()
 const path = require('path');
-const hbs = require('hbs');
-require('./helpers');
 const bodyParser = require('body-parser');
-const port = process.env.PORT || 3000;
+const mongoose = require('mongoose');
+require('./config/config')
 
 const dirNode_modules = path.join(__dirname , '../node_modules')
 const directorioPublico = path.join(__dirname, '../public');
-const directorioPartials = path.join(__dirname, '../templates/partials');
-const directorioViews = path.join(__dirname, '../templates/views');
 
 app.use(express.static(directorioPublico));
-//app.use('/css', express.static(dirNode_modules + '/bootstrap/dist/css'));
 app.use('/js', express.static(dirNode_modules + '/jquery/dist'));
 app.use('/js', express.static(dirNode_modules + '/popper.js/dist'));
-//app.use('/js', express.static(dirNode_modules + '/bootstrap/dist/js'));
-
-hbs.registerPartials(directorioPartials);
 
 app.use(bodyParser.urlencoded({extended: false}))
 
-app.set('view engine', 'hbs');
-app.set('views', directorioViews);
+//Routers
+app.use(require('./routers/index'));
 
-app.get('/', (req, res) => {
-  res.render('index', {
-    estudiante : 'Paola'
-  });
-});
+mongoose.connect(process.env.URLDB, {useNewUrlParser: true}, (err, result) =>{
+  if(err){
+    return console.log(err);
+  }
 
-app.post('/calculos', (req, res) => {
-  res.render('calculos', {
-    estudiante : req.body.nombre,
-    nota1: parseInt(req.body.nota1),
-    nota2: parseInt(req.body.nota2),
-    nota3: parseInt(req.body.nota3)
-  });
-});
-
-app.get('/crearCurso', (req, res) => {
-  res.render('crearCurso', {
-  });
-});
-
-app.post('/mensajeCurso', (req, res) => {
-  res.render('mensajeCurso', {
-    datosCurso : req.body
-  });
-});
-
-app.get('/verCursos', (req, res) => {
-  res.render('verCursos', {
-  });
-});
-
-app.get('/inscribir', (req, res) => {
-  res.render('inscribir', {
-  });
-});
-
-app.post('/mensajeInscritos', (req, res) => {
-  res.render('mensajeInscritos', {
-    datosEstudiante : req.body,
-    datosCurso : req.body.cursos
-  });
-});
-
-app.get('/verInscritos', (req, res) => {
-  res.render('verInscritos', {
-  });
-});
-
-app.get('*', (req, res) => {
-  res.render('error', {
-    estudiante: 'error'
-  });
-});
+  console.log('conectado');
+}
+);
    
-app.listen(port, () => {
-  console.log('Escuchando en el puerto ' + port);
+app.listen(process.env.PORT, () => {
+  console.log('Escuchando en el puerto ' + process.env.PORT);
 })
