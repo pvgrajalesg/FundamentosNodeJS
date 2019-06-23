@@ -11,11 +11,11 @@ const directorioPublico = path.join(__dirname, '../public');
 const directorioPartials = path.join(__dirname, '../templates/partials');
 const directorioViews = path.join(__dirname, '../templates/views');
 
-app.use('/css', express.static(dirNode_modules + '/bootstrap/dist/css'));
+app.use(express.static(directorioPublico));
+//app.use('/css', express.static(dirNode_modules + '/bootstrap/dist/css'));
 app.use('/js', express.static(dirNode_modules + '/jquery/dist'));
 app.use('/js', express.static(dirNode_modules + '/popper.js/dist'));
-app.use('/js', express.static(dirNode_modules + '/bootstrap/dist/js'));
-app.use(express.static(directorioPublico));
+//app.use('/js', express.static(dirNode_modules + '/bootstrap/dist/js'));
 
 hbs.registerPartials(directorioPartials);
 
