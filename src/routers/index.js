@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
     });
   }
 
-  /*let estudiante = new Estudiante({
+  let estudiante = new Estudiante({
     documento: 11111,
     tipo: 'Coordinador',
     nombre: 'Camila',
@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
     if(err){
       return console.log(err);
     }
-  }); */
+  });
     res.render('index', {
       
     });
