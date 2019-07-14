@@ -1,3 +1,19 @@
 {{>header}}
-{{{mostrarCursos}}}
+{{#if_eq tipo 'Coordinador'}}
+{{{mostrarCursos1 listado}}}
+<h3>Actualizar estado de un curso</h3>
+<form action="/actualizarCurso" method="post">
+<div class="form-group row">
+        <label for="inputCursos" class="col-sm-2 col-form-label">Cursos Disponibles:</label>
+        <div class="col-sm-10">
+            <select id="inputCursos" name="cursos" class="form-control">
+                {{{cargarCursos listado}}}
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
+{{else}}
+{{{mostrarCursos2 listado}}}
+{{/if_eq}}
 {{>footer}}

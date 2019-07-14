@@ -2,27 +2,19 @@ const hbs = require('hbs');
 const fs = require('fs');
 const funciones = require('./funciones');
 
-let listaCursos = [];
-let listaEstudiantesxCurso = [];
-const rutaCursos = 'src/listadoCursos.json';
-const rutaEstudiantesxCurso = 'src/listadoEstudiantesxCurso.json';
-
-hbs.registerHelper('obtenerPromedio', (nota1, nota2, nota3) => {
-    return (nota1+nota2+nota3)/3;
-});
-
-hbs.registerHelper('crearCurso', (datosCurso) => {
-    return funciones.crear(datosCurso);
-});
-
-hbs.registerHelper('inscribirEstudiante', (datosEstudiante) =>{
+hbs.registerHelper('inscribirEstudiante', (datosEstudiante) => {
     return funciones.inscribirEstudiante(datosEstudiante);
-}
+});
 
-);
+hbs.registerHelper('if_eq', function(a, b, opts) {
+    if (a == b) {
+        return opts.fn(this);
+    } else {
+        return opts.inverse(this);
+    }
+});
 
-hbs.registerHelper('mostrarCursos', () => {
-    listaCursos = listar(rutaCursos);
+hbs.registerHelper('mostrarCursos1', (listado) => {
 
     let texto = "<table class='table'> \
                     <thead class='thead-dark'> \
@@ -37,66 +29,133 @@ hbs.registerHelper('mostrarCursos', () => {
                         </tr> \
                     </thead> \
                     <tbody>";
-    listaCursos.forEach(curso => {
-        texto = texto + 
-                '<tr>' +
-                    '<td>'+ curso.id + '</td>' +
-                    '<td>'+ curso.nombre + '</td>' +
-                    '<td>'+ curso.modalidad + '</td>' +
-                    '<td>'+ curso.valor + '</td>' +
-                    '<td>'+ curso.descripcion + '</td>' +
-                    '<td>'+ curso.intensidad+ '</td>' +
-                    '<td>'+ curso.estado + '</td>' +
-                '</tr>';
+    listado.forEach(curso => {
+        texto = texto +
+            '<tr>' +
+            '<td>' + curso.id + '</td>' +
+            '<td>' + curso.nombre + '</td>' +
+            '<td>' + curso.modalidad + '</td>' +
+            '<td>' + curso.valor + '</td>' +
+            '<td>' + curso.descripcion + '</td>' +
+            '<td>' + curso.intensidad + '</td>' +
+            '<td>' + curso.estado + '</td>' +
+            '</tr>';
     })
 
     texto = texto + '</tbody></table>';
     return texto;
 });
 
-hbs.registerHelper('mostrarInscritos', () => {
-    listaEstudiantesxCurso = listar(rutaEstudiantesxCurso);
-    let texto = "<table class='table'> \
-                    <thead class='thead-dark'> \
-                        <th>Nombre del curso</th> \
-                        <th>Documento del estudiante</th> \
-                        <th>Nombre del estudiante</th> \
-                        <th>Correo</th> \
-                        <th>Teléfono</th> \
-                    </thead> \
-                    <tbody>";
-        listaEstudiantesxCurso.forEach(curso => {
-        texto = texto + 
-                '<tr>' +
-                    '<td>'+ curso.cursoInscrito + '</td>' +
-                    '<td>'+ curso.documento + '</td>' +
-                    '<td>'+ curso.nombre + '</td>' +
-                    '<td>'+ curso.correo + '</td>' +
-                    '<td>'+ curso.telefono + '</td>' +
-                '</tr>';
+hbs.registerHelper('mostrarCursos2', (listado) => {
+    let texto = "<div class='accordion' id='accordionExample'>";
+    i = 1;
+    listado.forEach(curso => {
+        if (curso.estado == 'Disponible') {
+            texto = texto +
+                `<div class="card">
+          <div class="card-header" id="heading${i}">
+            <h2 class="mb-0">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+              ${curso.id}: ${curso.nombre}
+              </button>
+            </h2>
+          </div>
+          <div id="collapse${i}" class="collapse" aria-labelledby="heading${i}" data-parent="#accordionExample">
+            <div class="card-body">
+              Descripción: ${curso.descripcion} <br>
+              Modalidad: ${curso.modalidad} <br>
+              Valor: ${curso.valor} <br>
+              Intensidad: ${curso.intensidad} <br>
+            </div>
+          </div>
+        </div>`
+            i = i + 1;
+        }
     })
 
-    texto = texto + '</tbody></table>';
+    texto = texto + '</div>';
     return texto;
 });
 
-const listar = (ruta) =>{
-    try{
+hbs.registerHelper('mostrarInscritos', (listadoCurso, listadoEstudiante, listadoEstudiantesCursos) => {
+    let texto = "<div class='accordion' id='accordionExample'>";
+    i = 1;
+    listadoCurso.forEach(curso => {
+        texto = texto +
+            `<div class="card">
+          <div class="card-header" id="heading${i}">
+            <h2 class="mb-0">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+                ${curso.nombre}
+              </button>
+            </h2>
+          </div>
+          <div id="collapse${i}" class="collapse" aria-labelledby="heading${i}" data-parent="#accordionExample">
+            <div class="card-body">
+        
+                        <table class='table'>
+                            <thead class='thead-dark'>
+                            <tr>
+                                <th>Documento</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Telefono</th>
+                                <th>Eliminar</th>
+                            </tr>
+                            </thead>
+                            <tbody>`;
+        listadoEstudiantesCursos.forEach(cursoEstudiante => {
+            if (cursoEstudiante.id == curso.id) {
+                listadoEstudiante.forEach(estudiante => {
+                    if (estudiante.documento == cursoEstudiante.documento) {
+                        texto = texto +
+                            '<tr>' +
+                            '<td>' + estudiante.documento + '</td>' +
+                            '<td>' + estudiante.nombre + '</td>' +
+                            '<td>' + estudiante.correo + '</td>' +
+                            '<td>' + estudiante.telefono + '</td>' +
+                            '<td>' +
+                            '<form action="/delete" method="post">'+
+                            `<input id="nombre" type="hidden" name="nombreCurso" value=${estudiante.documento} >` +
+                            '<button type="submit" class="btn btn-danger">Eliminar</button>'+
+                            '</form> </td>'+
+                        '</tr>';
+                    }
+                })
+            }
+        })
+
+        texto = texto + `</tbody>
+
+                        </table>
+        </div>
+          </div>
+        </div>`
+        i = i + 1;
+    });
+
+    texto = texto + '</div>';
+    return texto;
+
+
+});
+
+
+const listar = (ruta) => {
+    try {
         return JSON.parse(fs.readFileSync(ruta));
-    }catch(error){
+    } catch (error) {
         return [];
     }
 }
 
-hbs.registerHelper('cargarCursos', () =>{
+hbs.registerHelper('cargarCursos', (listado) => {
 
     let cursosDisponibles = '<option selected> - </option>'
-    listaCursos = listar(rutaCursos);
-    console.log(listaCursos);
-    listaCursos.forEach(curso => {
-        if(curso.estado == 'disponible'){
-            cursosDisponibles = cursosDisponibles + 
-            '<option>' + curso.nombre + '</option>';
+    listado.forEach(curso => {
+        if (curso.estado == 'Disponible') {
+            cursosDisponibles = cursosDisponibles +
+                `<option value=${curso.id}>` + curso.nombre + '</option>';
         }
     });
 
