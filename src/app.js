@@ -4,6 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+var MemoryStore = require('memorystore')(session);
 require('./config/config')
 
 const dirNode_modules = path.join(__dirname , '../node_modules')
@@ -15,9 +16,11 @@ app.use('/js', express.static(dirNode_modules + '/popper.js/dist'));
 app.use('/js', express.static(dirNode_modules + '/bootstrap/dist/js'));
 
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
+  cookie: { maxAge: 86400000 },
+    store: new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
+    secret: 'keyboard cat'
 }))
 
 app.use((req, res, next) =>{
